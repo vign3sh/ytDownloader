@@ -1,0 +1,9 @@
+pipenv shell; exit
+fastapi dev main.py
+
+import pdb; pdb.set_trace():
+    c-continue
+    q-quit
+    n-next line
+
+    

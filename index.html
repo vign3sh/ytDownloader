@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    </head>
+<body>
+<!--
+    <audio id="audioPlayer" controls>
+        <source id="song" src="" type="audio/mpeg">
+    </audio>
+    https://www.youtube.com/watch?v=fvUmrVnqLV0
+    https://music.youtube.com/playlist?list=PLDCzG-mQi15JutPnxDALeYn3p6dlvzmIh&si=vAg6S01P7oZ6OSE3
+-->
+<div class="ms-4 mt-4">
+    <h2>Music</h2>
+    <h5>Enter the youtube video link to download song</h5>
+
+    <div class="input-group mb-3 mt-1" style="max-width:300px">
+        <input id="songId" class="form-control" placeholder="yt link">
+        <button id="downloadSong" class="btn btn-outline-success">Download Song</button>
+    </div>
+    <!--<a id="downloadSong" sttyle=""><button id="downloadSongButton" disabled>Download Song</button></a>-->
+    <br>
+
+    <h5>Enter the youtube Playlist link and download them one song at a time</h5>
+
+    <div class="input-group mb-3 mt-1" style="max-width:300px">
+        <input id="playlistId" class="form-control" placeholder="yt playlist link">
+        <button id="fetchPlaylistSongs" class="btn btn-outline-success">Playlist Details</button>
+    </div>
+    <div id="playlistTable"></div>
+</div>
+
+
+
+
+<script>
+    let serverCall = function(options, callback){
+    let call = $.ajax(options);
+
+    call.done(function(response){
+        if(response.SUCCESS){
+            callback(response);
+        } else {
+            console.log('error', response);
+            callback(response);
+        }
+    });    
+
+    call.fail(function(e){
+        console.log('error', e);
+        callback(false);
+    });
+}
+    $('#downloadSong').on('click', function(event){
+        event.preventDefault();
+        let self = $(this);
+        //var audio = $("#audioPlayer");      
+        let song = $("#songId").val();
+        let songId = song.slice(song.lastIndexOf("v=")+2, song.length)
+        //console.log(songId);
+        //$("#song").attr("src", "http://127.0.0.1:8000/music/single/D_QLxj8jCF0");
+        
+        /*
+        $("#song").attr("src", `http://127.0.0.1:8000/music/single/${songId}`);
+        $('#downloadSong').attr("href", `http://127.0.0.1:8000/music/single/${songId}?save=true`);
+        $("#downloadSongButton").prop("disabled", false); 
+        audio[0].load();
+        */
+        window.open(`http://127.0.0.1:8000/music/single/${songId}`, "_blank", "noopener,noreferrer");
+    });
+
+
+    $('#fetchPlaylistSongs').on('click', function(event){
+        event.preventDefault();
+        let self = $(this);
+        var audio = $("#audioPlayer");      
+        let playlist = $("#playlistId").val();
+        let start = playlist.lastIndexOf("list=")+5;
+        let end = (playlist.lastIndexOf("&") > start) ? playlist.lastIndexOf("&") : playlist.length+1;
+        let playlistId = playlist.slice(start, end);
+
+    let options = {
+        type: 'GET',
+        url: `http://127.0.0.1:8000/music/playlist/${playlistId}`,        
+        dataType: 'json'
+    };
+
+    let callback = function(response){
+        let tableWrapper = $("#playlistTable");
+        if(response.SUCCESS){
+            console.log('success');
+            let songs = response.songs;
+            let thead = '<thead><tr><th scope="col">#</th><th scope="col">Name</th><th scope="col">Link</th></tr></thead>';
+            let tBody = '<tbody>';
+            for (var i = 0; i < songs.length; i++) {
+                tBody += `<tr><th scope="row">${i+1}</th><td>${songs[i].title}</td><td><a href="${songs[i].url}">Dowload Song</a></td></tr>`
+            }
+            let table = `<table class="table">${thead}${tBody}</tbody></table>`;
+            tableWrapper.html(table)
+            console.log(table);
+        } 
+        else {
+            console.log('failed');
+        }
+    }
+
+    serverCall(options, callback);
+});
+</script>
+</body>
+</html>
+
