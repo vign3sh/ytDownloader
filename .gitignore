@@ -1,1 +1,2 @@
 /server/downloads/*
+/server/routers/__pycache__/*

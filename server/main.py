@@ -1,17 +1,9 @@
-import os
-from fastapi import FastAPI, Response
-from fastapi.responses import FileResponse
-from pytubefix import YouTube, Playlist
-from pytubefix import Buffer
-from pytubefix.cli import on_progress
 import uvicorn
-from starlette.background import BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from routers import music
+from fastapi import FastAPI
 
-buffer = Buffer()
-buffer.clear()
 app = FastAPI()
-
 origins = ["*"]
 
 app.add_middleware(
@@ -22,11 +14,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(music.router)
+
 @app.get("/")
 async def root():
     return {"message": "Hello World1"}
 
-
+'''
 @app.get("/music/single/{yt_link}")
 async def getMusicSingle(bg_tasks: BackgroundTasks, yt_link: str ="fvUmrVnqLV0", save: bool = False):
     current_dir = os.getcwd()
@@ -68,6 +62,7 @@ async def getMusicPlaylist(yt_link: str="PLDCzG-mQi15JutPnxDALeYn3p6dlvzmIh", st
         songs.append(song)
     """import pdb; pdb.set_trace();"""
     return {"SUCCESS":True, "songs":songs}
-
+'''
+    
 if __name__ == "__main__":
         uvicorn.run(app, host="0.0.0.0", port=8000)
