@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
-from routers import music
+from .routers import music
 from fastapi import FastAPI
 
 app = FastAPI()

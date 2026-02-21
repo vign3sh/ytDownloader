@@ -1,4 +1,5 @@
 pipenv shell; exit
+pipenv install
 fastapi dev main.py
 
 import pdb; pdb.set_trace():
